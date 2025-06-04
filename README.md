@@ -1,4 +1,4 @@
-# CRM Test Project
+# Client Finance Manager Project
 
 A custom MVC CRUD system in vanilla PHP for managing clients and their financial movements (expenses/earnings), with administrator authentication.
 
