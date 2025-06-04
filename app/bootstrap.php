@@ -1,9 +1,18 @@
 <?php
 // Autoload classes
 spl_autoload_register(function ($class) {
-    // Convert namespace to full file path
-    $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
-    if (file_exists($file)) {
-        require $file;
+    $prefixes = [
+        'App\\' => 'app/',
+        'Core\\' => 'app/Core/',
+    ];
+    foreach ($prefixes as $prefix => $dir) {
+        if (strpos($class, $prefix) === 0) {
+            $relative = str_replace('\\', '/', substr($class, strlen($prefix)));
+            $file = __DIR__ . '/../' . $dir . $relative . '.php';
+            if (file_exists($file)) {
+                require $file;
+                return;
+            }
+        }
     }
 }); 
