@@ -6,6 +6,10 @@ use Core\BaseModel;
 class Administrator extends BaseModel {
     protected $table = 'administrators';
 
+    public function __construct() {
+        parent::__construct();
+    }
+
     public function authenticate($username, $password) {
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE username = ?");
         $stmt->execute([$username]);
@@ -20,5 +24,11 @@ class Administrator extends BaseModel {
     public function create($data) {
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         return parent::create($data);
+    }
+
+    public function findByUsername($username) {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE username = ?");
+        $stmt->execute([$username]);
+        return $stmt->fetch();
     }
 } 
