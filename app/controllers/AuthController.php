@@ -26,12 +26,12 @@ class AuthController extends BaseController {
                 $_SESSION['admin_username'] = $result['username'];
                 $this->redirect('/dashboard');
             } else {
-                $this->view('auth/login', [
+                $this->render('auth/login', [
                     'error' => 'Invalid username or password'
                 ]);
             }
         } else {
-            $this->view('auth/login');
+            $this->render('auth/login');
         }
     }
 
