@@ -47,4 +47,28 @@ class Movement extends BaseModel {
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    public function count() {
+        $sql = "SELECT COUNT(*) as total FROM movements";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
+    public function getTotalIncome() {
+        $sql = "SELECT SUM(amount) as total FROM movements WHERE type = 'income'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
+    public function getTotalExpenses() {
+        $sql = "SELECT SUM(amount) as total FROM movements WHERE type = 'expense'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
 } 

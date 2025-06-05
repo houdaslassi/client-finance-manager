@@ -120,4 +120,19 @@ class Client extends BaseModel {
         $stmt->execute($params);
         return $stmt->fetchAll();
     }
+
+    public function all()
+    {
+        $sql = "SELECT * FROM clients ORDER BY name ASC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function count() {
+        $sql = "SELECT COUNT(*) as total FROM clients";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
 } 
