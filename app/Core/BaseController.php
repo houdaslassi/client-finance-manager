@@ -17,7 +17,12 @@ class BaseController {
         require_once dirname(__DIR__) . "/views/{$view}.php";
     }
 
-    protected function redirect($url) {
+    protected function redirect($url, $message = null) {
+        error_log("Redirecting to: " . $url);
+        if ($message) {
+            error_log("With message: " . $message);
+            $_SESSION['flash_message'] = $message;
+        }
         header("Location: {$url}");
         exit;
     }
@@ -49,5 +54,18 @@ class BaseController {
         header("HTTP/1.0 401 Unauthorized");
         echo "401 Unauthorized";
         exit;
+    }
+
+    protected function requireAuth() {
+        if (!isset($_SESSION['admin_id'])) {
+            header('Location: /login');
+            exit();
+        }
+    }
+
+    protected function view($view, $data = [])
+    {
+        extract($data);
+        require __DIR__ . '/../views/' . $view . '.php';
     }
 } 

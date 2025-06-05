@@ -44,18 +44,31 @@ $routes = [
 $route = $_SERVER['REQUEST_URI'];
 $route = parse_url($route, PHP_URL_PATH);
 
+error_log("Current route: " . $route);
+error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
+error_log("Available routes: " . print_r($routes, true));
+
 // Check if route exists
 if (isset($routes[$route])) {
+    error_log("Route matched: " . $route);
     $controller = $routes[$route]['controller'];
     $action = $routes[$route]['action'];
     
+    error_log("Controller: " . $controller);
+    error_log("Action: " . $action);
+    
     // Create controller instance
     $controllerClass = "App\\Controllers\\{$controller}";
+    error_log("Creating controller instance: " . $controllerClass);
     $controllerInstance = new $controllerClass();
     
     // Call the action
+    error_log("Calling action: " . $action);
     $controllerInstance->$action();
+    error_log("Action completed");
 } else {
+    error_log("No direct route match found for: " . $route);
+    
     // Check for dynamic routes
     foreach ($routes as $pattern => $routeInfo) {
         $pattern = str_replace('{id}', '(\d+)', $pattern);
@@ -63,16 +76,24 @@ if (isset($routes[$route])) {
             $controller = $routeInfo['controller'];
             $action = $routeInfo['action'];
             
+            error_log("Matched dynamic route: " . $pattern);
+            error_log("Controller: " . $controller);
+            error_log("Action: " . $action);
+            
             // Create controller instance
             $controllerClass = "App\\Controllers\\{$controller}";
+            error_log("Creating controller instance: " . $controllerClass);
             $controllerInstance = new $controllerClass();
             
             // Call the action with the ID parameter
+            error_log("Calling action: " . $action . " with ID: " . $matches[1]);
             $controllerInstance->$action($matches[1]);
+            error_log("Action completed");
             exit;
         }
     }
     
+    error_log("No route match found at all for: " . $route);
     // Route not found
     header("HTTP/1.0 404 Not Found");
     echo "404 Not Found";
