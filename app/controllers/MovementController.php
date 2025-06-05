@@ -19,8 +19,14 @@ class MovementController extends BaseController
     public function index()
     {
         $this->requireAuth();
-        $movements = $this->movementModel->allWithClients();
-        $this->view('movements/index', ['movements' => $movements]);
+        $startDate = $_GET['start_date'] ?? null;
+        $endDate = $_GET['end_date'] ?? null;
+        $movements = $this->movementModel->allWithClients($startDate, $endDate);
+        $this->render('movements/index', [
+            'movements' => $movements,
+            'start_date' => $startDate,
+            'end_date' => $endDate
+        ]);
     }
 
     public function show($id)

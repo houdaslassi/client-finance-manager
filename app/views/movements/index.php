@@ -14,6 +14,20 @@
         </div>
         <h1 class="text-2xl font-bold mb-6">Movements</h1>
         <a href="/movements/create" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Add Movement</a>
+        <form method="get" class="mb-6 flex flex-wrap items-end gap-4">
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                <input type="date" id="start_date" name="start_date" value="<?php echo htmlspecialchars($start_date ?? ''); ?>" class="mt-1 block w-full border px-3 py-2 rounded">
+            </div>
+            <div>
+                <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                <input type="date" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date ?? ''); ?>" class="mt-1 block w-full border px-3 py-2 rounded">
+            </div>
+            <div class="pt-5">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+                <a href="/movements" class="ml-2 text-gray-600 hover:underline">Reset</a>
+            </div>
+        </form>
         <table class="min-w-full bg-white shadow-md rounded mb-4">
             <thead>
                 <tr>
