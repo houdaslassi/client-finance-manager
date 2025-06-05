@@ -26,6 +26,25 @@ class HomeController extends BaseController {
     }
 
     public function dashboard() {
-        $this->render('home/dashboard');
+        $this->requireAuth();
+        
+        // Get total clients
+        $client = new \App\Models\Client();
+        $totalClients = $client->count();
+        
+        // Get total movements
+        $movement = new \App\Models\Movement();
+        $totalMovements = $movement->count();
+        
+        // Get total income and expenses
+        $totalIncome = $movement->getTotalIncome();
+        $totalExpenses = $movement->getTotalExpenses();
+        
+        $this->render('home/dashboard', [
+            'totalClients' => $totalClients,
+            'totalMovements' => $totalMovements,
+            'totalIncome' => $totalIncome,
+            'totalExpenses' => $totalExpenses
+        ]);
     }
 } 
