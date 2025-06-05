@@ -9,6 +9,11 @@
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-2xl mx-auto">
+            <div class="mb-4">
+                <a href="/dashboard" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded">
+                    &larr; Back to Dashboard
+                </a>
+            </div>
             <h1 class="text-2xl font-bold mb-6"><?php echo htmlspecialchars($title); ?></h1>
 
             <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">

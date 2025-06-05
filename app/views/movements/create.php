@@ -8,6 +8,11 @@
 <body class="bg-gray-100">
     <div class="container mx-auto py-8">
         <h1 class="text-2xl font-bold mb-6">Add Movement</h1>
+        <div class="mb-4">
+            <a href="/dashboard" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded">
+                &larr; Back to Dashboard
+            </a>
+        </div>
         <form action="/movements/store" method="post" class="bg-white p-6 rounded shadow-md">
             <div class="mb-4">
                 <label class="block mb-2">Client</label>

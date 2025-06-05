@@ -7,6 +7,11 @@
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto py-8">
+        <div class="mb-4">
+            <a href="/dashboard" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded">
+                &larr; Back to Dashboard
+            </a>
+        </div>
         <h1 class="text-2xl font-bold mb-6">Movements</h1>
         <a href="/movements/create" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Add Movement</a>
         <table class="min-w-full bg-white shadow-md rounded mb-4">
@@ -36,7 +41,6 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="/dashboard" class="text-gray-600 hover:underline">Back to Dashboard</a>
     </div>
 </body>
 </html> 

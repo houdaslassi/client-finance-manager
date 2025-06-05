@@ -8,6 +8,11 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
+        <div class="mb-4">
+            <a href="/dashboard" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded">
+                &larr; Back to Dashboard
+            </a>
+        </div>
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold"><?php echo htmlspecialchars($title); ?></h1>
             <a href="/clients/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
