@@ -40,4 +40,11 @@ class Movement extends BaseModel {
         $stmt->execute([$clientId]);
         return $stmt->fetch()['balance'];
     }
+
+    public function allWithClients()
+    {
+        $sql = "SELECT m.*, c.name as client_name FROM movements m JOIN clients c ON m.client_id = c.id ORDER BY m.date DESC, m.id DESC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 } 
