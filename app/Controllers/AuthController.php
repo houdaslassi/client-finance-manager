@@ -8,8 +8,12 @@ class AuthController extends BaseController {
     public function __construct() {
         parent::__construct();
         error_log("AuthController constructed");
-        // Redirect to dashboard if already logged in
-        if (isset($_SESSION['admin_id']) && $this->route !== '/logout') {
+
+        // Get current route properly
+        $currentRoute = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        // Redirect to dashboard if already logged in (except for logout)
+        if (isset($_SESSION['admin_id']) && $currentRoute !== '/logout') {
             $this->redirect('/dashboard');
         }
     }
@@ -57,15 +61,15 @@ class AuthController extends BaseController {
 
     public function logout() {
         error_log("Logout method called");
-        
+
         // Clear all session variables
         $_SESSION = array();
         error_log("Session variables cleared");
-        
+
         // Destroy the session
         session_destroy();
         error_log("Session destroyed");
-        
+
         // Clear cookies
         if (isset($_COOKIE[session_name()])) {
             setcookie(session_name(), '', time() - 3600, '/');
@@ -75,7 +79,7 @@ class AuthController extends BaseController {
             setcookie('remember_token', '', time() - 3600, '/');
             error_log("Remember token cookie cleared");
         }
-        
+
         // Force redirect
         error_log("Redirecting to login page");
         header('Location: /login');
@@ -88,4 +92,4 @@ class AuthController extends BaseController {
         }
         return $_SESSION['csrf_token'];
     }
-} 
+}
