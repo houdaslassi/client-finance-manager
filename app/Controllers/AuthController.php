@@ -17,10 +17,10 @@ class AuthController extends BaseController {
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // CSRF Protection
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            /*if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 $this->render('auth/login', ['error' => 'Invalid request']);
                 return;
-            }
+            }*/
 
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
