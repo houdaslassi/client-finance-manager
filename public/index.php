@@ -5,7 +5,17 @@ require_once __DIR__ . '/../app/bootstrap.php';
 // Start session
 session_start();
 
-// Define routes
+// Get the current route
+$route = $_SERVER['REQUEST_URI'];
+$route = parse_url($route, PHP_URL_PATH);
+
+// Handle API routes FIRST (before web routes)
+if (strpos($route, '/api') === 0) {
+    require_once __DIR__ . '/api.php';
+    exit;
+}
+
+// Define routes (your existing routes)
 $routes = [
     // Auth routes
     '/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -39,10 +49,6 @@ $routes = [
     '/movements/{id}/update' => ['controller' => 'MovementController', 'action' => 'update'],
     '/movements/{id}/delete' => ['controller' => 'MovementController', 'action' => 'delete']
 ];
-
-// Get the current route
-$route = $_SERVER['REQUEST_URI'];
-$route = parse_url($route, PHP_URL_PATH);
 
 error_log("Current route: " . $route);
 error_log("Request method: " . $_SERVER['REQUEST_METHOD']);
