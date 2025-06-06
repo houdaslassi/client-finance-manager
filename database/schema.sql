@@ -37,6 +37,24 @@ CREATE TABLE IF NOT EXISTS movements (
     FOREIGN KEY (created_by) REFERENCES administrators(id)
 );
 
+-- API tokens table for professional authentication
+CREATE TABLE IF NOT EXISTS api_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    administrator_id INT NOT NULL,
+    token_hash VARCHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL,
+    last_used_at DATETIME NULL,
+    revoked_at DATETIME NULL,
+    user_agent TEXT NULL,
+    ip_address VARCHAR(45) NULL,
+    INDEX idx_administrator_id (administrator_id),
+    INDEX idx_token_hash (token_hash),
+    INDEX idx_expires_at (expires_at),
+    INDEX idx_active_tokens (administrator_id, expires_at, revoked_at),
+    FOREIGN KEY (administrator_id) REFERENCES administrators(id) ON DELETE CASCADE
+    );
+
 -- Create indexes
 CREATE INDEX idx_client_movements ON movements(client_id, date);
-CREATE INDEX idx_movement_type ON movements(type); 
+CREATE INDEX idx_movement_type ON movements(type);
