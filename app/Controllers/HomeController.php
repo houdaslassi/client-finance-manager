@@ -5,10 +5,11 @@ use Core\BaseController;
 
 class HomeController extends BaseController {
     public function index() {
-        $this->render('home/index', [
-            'title' => 'Home Page',
-            'message' => 'Welcome to Client Finance Manager'
-        ]);
+        if (isset($_SESSION['admin_id'])) {
+            $this->redirect('/dashboard');
+        } else {
+            $this->redirect('/login');
+        }
     }
 
     public function about() {
