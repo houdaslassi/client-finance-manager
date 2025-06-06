@@ -86,4 +86,16 @@ class Movement extends BaseModel {
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         return $result['total'] ?? 0;
     }
+
+    public function getByClientId($clientId) {
+        $stmt = $this->db->prepare("
+            SELECT m.*, c.name as client_name, c.email as client_email 
+            FROM {$this->table} m 
+            LEFT JOIN clients c ON m.client_id = c.id 
+            WHERE m.client_id = ? 
+            ORDER BY m.created_at DESC
+        ");
+        $stmt->execute([$clientId]);
+        return $stmt->fetchAll();
+    }
 } 
