@@ -14,7 +14,7 @@ class BaseController {
 
     protected function render($view, $data = []) {
         extract($data);
-        require_once dirname(__DIR__) . "/views/{$view}.php";
+        require_once dirname(__DIR__) . "/Views/{$view}.php";
     }
 
     protected function redirect($url, $message = null) {
@@ -68,4 +68,4 @@ class BaseController {
         extract($data);
         require __DIR__ . '/../views/' . $view . '.php';
     }
-} 
+}
