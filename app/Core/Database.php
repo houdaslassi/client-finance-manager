@@ -6,15 +6,19 @@ class Database {
     private $connection;
 
     private function __construct() {
-        // Try environment variables first (Heroku)
-        $host = getenv('DB_HOST');
-        $dbname = getenv('DB_DATABASE');
-        $user = getenv('DB_USERNAME');
-        $pass = getenv('DB_PASSWORD');
-        $port = getenv('DB_PORT') ?: 3306;
-
-        // Fallback to config file for local development
-        if (!$host || !$dbname || !$user) {
+        // Try JawsDB URL first (Heroku)
+        $jawsdb_url = getenv('JAWSDB_URL');
+        
+        if ($jawsdb_url) {
+            $dbparts = parse_url($jawsdb_url);
+            $host = $dbparts['host'];
+            $user = $dbparts['user'];
+            $pass = $dbparts['pass'];
+            $dbname = ltrim($dbparts['path'], '/');
+            $port = $dbparts['port'] ?? 3306;
+            error_log("DB DEBUG: host=$host, port=$port, dbname=$dbname, user=$user");
+        } else {
+            // Fallback to config file for local development
             $config = require __DIR__ . '/../../config/database.php';
             $host = $config['host'];
             $dbname = $config['dbname'];
