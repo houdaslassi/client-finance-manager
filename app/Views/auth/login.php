@@ -17,6 +17,7 @@
         <?php endif; ?>
 
         <form method="POST" action="/login">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
                     Username
@@ -38,12 +39,6 @@
                         type="submit">
                     Sign In
                 </button>
-            </div>
-
-            <div class="mt-4 text-center">
-                <a href="/forgot-password" class="text-sm text-blue-500 hover:text-blue-700">
-                    Forgot your password?
-                </a>
             </div>
         </form>
     </div>
