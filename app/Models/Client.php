@@ -10,7 +10,7 @@ class Client extends BaseModel {
         parent::__construct();
     }
 
-    public function validate($data) {
+    public function validate($data, $id = null) {
         $errors = [];
 
         if (empty($data['name'])) {
@@ -21,6 +21,19 @@ class Client extends BaseModel {
             $errors['email'] = 'Email is required';
         } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Invalid email format';
+        } else {
+            // Check for duplicate email
+            $sql = "SELECT id FROM clients WHERE email = ?";
+            $params = [$data['email']];
+            if ($id) {
+                $sql .= " AND id != ?";
+                $params[] = $id;
+            }
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            if ($stmt->fetch()) {
+                $errors['email'] = 'Email already exists';
+            }
         }
 
         if (empty($data['phone'])) {
@@ -40,7 +53,7 @@ class Client extends BaseModel {
     }
 
     public function update($id, $data) {
-        $errors = $this->validate($data);
+        $errors = $this->validate($data, $id);
         if (!empty($errors)) {
             return ['success' => false, 'errors' => $errors];
         }
