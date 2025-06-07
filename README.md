@@ -1,6 +1,6 @@
 # Client Finance Manager
 
-A custom MVC CRUD system in vanilla PHP for managing clients and their financial movements (expenses/earnings), with administrator authentication and professional REST API.
+A custom MVC CRUD system in vanilla PHP for managing clients and their financial movements (expenses/earnings), with administrator authentication and REST API.
 
 ## Project Structure
 
@@ -68,7 +68,7 @@ client-finance-manager/
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd crm-test
+   cd client-finance-manager
    ```
 
 2. **Setup environment**
