@@ -6,7 +6,34 @@ use Core\BaseModel;
 class Movement extends BaseModel {
     protected $table = 'movements';
 
+    public function validate($data)
+    {
+        $errors = [];
+
+        if (empty($data['client_id'])) {
+            $errors['client_id'] = 'Client ID is required';
+        }
+
+        if (empty($data['type'])) {
+            $errors['type'] = 'Type is required';
+        } elseif (!in_array($data['type'], ['income', 'earning', 'expense'])) {
+            $errors['type'] = 'Invalid type. Must be income, earning, or expense';
+        }
+
+        if (empty($data['amount'])) {
+            $errors['amount'] = 'Amount is required';
+        } elseif (!is_numeric($data['amount']) || $data['amount'] <= 0) {
+            $errors['amount'] = 'Amount must be a positive number';
+        }
+
+        return $errors;
+    }
+
     public function create($data) {
+        $errors = $this->validate($data);
+        if (!empty($errors)) {
+            return ['success' => false, 'errors' => $errors];
+        }
         $data['date'] = date('Y-m-d H:i:s');
         return parent::create($data);
     }
