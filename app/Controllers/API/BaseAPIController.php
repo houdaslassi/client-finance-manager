@@ -36,7 +36,7 @@ class BaseAPIController {
      * API Token Authentication (updated to use database)
      * @return array Admin data
      */
-    protected function authenticateAPI() {
+    protected function authenticateAPI($withTokenMeta = false) {
         $token = $this->getAPIToken();
 
         if (!$token) {
@@ -75,32 +75,40 @@ class BaseAPIController {
         ");
         $updateStmt->execute([hash('sha256', $token)]);
 
-        return [
+        $admin = [
             'id' => $result['id'],
             'username' => $result['username'],
             'email' => $result['email'],
             'token_expires' => $result['expires_at']
         ];
+        if ($withTokenMeta) {
+            $admin['current_token'] = $token;
+            $admin['last_used_at'] = $result['last_used_at'];
+        }
+        return $admin;
     }
 
     /**
-     * Get API token from multiple sources
+     * Get API token from request (Bearer token preferred)
      */
     private function getAPIToken() {
-        return $_GET['api_token'] ??
-            $_SERVER['HTTP_X_API_TOKEN'] ??
-            $this->extractBearerToken();
-    }
-
-    /**
-     * Extract Bearer token from Authorization header
-     */
-    private function extractBearerToken() {
         $headers = getallheaders();
-        if (isset($headers['Authorization']) && strpos($headers['Authorization'], 'Bearer ') === 0) {
-            return substr($headers['Authorization'], 7); // Remove 'Bearer ' prefix
+
+        // 1. Check Authorization header for Bearer token
+        if (isset($headers['Authorization'])) {
+            $authHeader = $headers['Authorization'];
+            if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
+                return $matches[1];
+            }
         }
-        return null;
+
+        // 2. Check X-API-Token header
+        if (isset($headers['X-API-Token'])) {
+            return $headers['X-API-Token'];
+        }
+
+        // 3. Fallback to query parameter
+        return $_GET['api_token'] ?? null;
     }
 
     /**

@@ -84,7 +84,7 @@ class AuthAPIController extends BaseAPIController {
     public function logout() {
         $this->validateAPIMethod(['POST']);
 
-        $admin = $this->authenticateAPIWithDB();
+        $admin = $this->authenticateAPI(true);
 
         try {
             // Revoke current token
@@ -108,7 +108,7 @@ class AuthAPIController extends BaseAPIController {
     public function logoutAll() {
         $this->validateAPIMethod(['POST']);
 
-        $admin = $this->authenticateAPIWithDB();
+        $admin = $this->authenticateAPI(true);
 
         try {
             // Revoke all tokens for this admin
@@ -132,7 +132,7 @@ class AuthAPIController extends BaseAPIController {
     public function me() {
         $this->validateAPIMethod(['GET']);
 
-        $admin = $this->authenticateAPIWithDB();
+        $admin = $this->authenticateAPI(true);
 
         $this->apiSuccess([
             'admin' => [
@@ -241,82 +241,5 @@ class AuthAPIController extends BaseAPIController {
             ");
             $stmt->execute([$adminId]);
         }
-    }
-
-    /**
-     * Authenticate with database token
-     */
-    private function authenticateAPIWithDB() {
-        $token = $this->getAPIToken();
-
-        if (!$token) {
-            $this->apiError('Authorization token required', 401, [
-                'hint' => 'Include token in Authorization header: Bearer <token>'
-            ]);
-        }
-
-        // Check token in database
-        $stmt = $this->db->prepare("
-            SELECT 
-                at.expires_at,
-                at.last_used_at,
-                a.id, 
-                a.username, 
-                a.email 
-            FROM api_tokens at 
-            JOIN administrators a ON at.administrator_id = a.id 
-            WHERE at.token_hash = ? 
-            AND at.expires_at > NOW() 
-            AND at.revoked_at IS NULL
-        ");
-
-        $stmt->execute([hash('sha256', $token)]);
-        $result = $stmt->fetch();
-
-        if (!$result) {
-            $this->apiError('Invalid or expired token', 401);
-        }
-
-        // Update last used timestamp
-        $updateStmt = $this->db->prepare("
-            UPDATE api_tokens 
-            SET last_used_at = NOW() 
-            WHERE token_hash = ?
-        ");
-        $updateStmt->execute([hash('sha256', $token)]);
-
-        // Return admin data with current token
-        return [
-            'id' => $result['id'],
-            'username' => $result['username'],
-            'email' => $result['email'],
-            'current_token' => $token,
-            'token_expires' => $result['expires_at'],
-            'last_used_at' => $result['last_used_at']
-        ];
-    }
-
-    /**
-     * Get API token from request (Bearer token preferred)
-     */
-    private function getAPIToken() {
-        // Priority: Authorization Bearer > X-API-Token header > api_token query param
-        $headers = getallheaders();
-
-        // Check Authorization header first (most professional)
-        if (isset($headers['Authorization'])) {
-            $authHeader = $headers['Authorization'];
-            if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-                return $matches[1];
-            }
-        }
-
-        // Check X-API-Token header
-        if (isset($headers['X-API-Token'])) {
-            return $headers['X-API-Token'];
-        }
-
-        // Fallback to query parameter (least secure)
-        return $_GET['api_token'] ?? null;
     }
 }

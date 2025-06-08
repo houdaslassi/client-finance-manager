@@ -63,7 +63,7 @@ class Client extends BaseModel {
 
     public function getAllWithBalance() {
         $sql = "SELECT c.*, 
-                COALESCE(SUM(CASE WHEN m.type = 'income' THEN m.amount ELSE -m.amount END), 0) as balance 
+                COALESCE(SUM(CASE WHEN m.type IN ('income', 'earning') THEN m.amount WHEN m.type = 'expense' THEN -m.amount ELSE 0 END), 0) as balance 
                 FROM {$this->table} c 
                 LEFT JOIN movements m ON c.id = m.client_id 
                 GROUP BY c.id 
@@ -90,9 +90,10 @@ class Client extends BaseModel {
         // Calculate balance
         $balance = 0;
         foreach ($movements as $movement) {
-            if ($movement['type'] === 'income') {
+            $type = strtolower($movement['type']);
+            if ($type === 'income' || $type === 'earning') {
                 $balance += $movement['amount'];
-            } else {
+            } elseif ($type === 'expense') {
                 $balance -= $movement['amount'];
             }
         }
