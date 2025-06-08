@@ -72,7 +72,7 @@ class Movement extends BaseModel {
     }
 
     public function getTotalIncome() {
-        $sql = "SELECT SUM(amount) as total FROM movements WHERE type = 'income'";
+        $sql = "SELECT SUM(amount) as total FROM movements WHERE type IN ('income', 'earning')";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
