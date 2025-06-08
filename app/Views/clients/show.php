@@ -42,11 +42,15 @@
                     <tr><td colspan="5" class="py-4 text-center text-gray-500">No movements found.</td></tr>
                 <?php else: ?>
                     <?php foreach ($movements as $movement): ?>
+                        <?php
+                            $type = strtolower($movement['type']);
+                            $isEarning = $type === 'income' || $type === 'earning';
+                        ?>
                         <tr>
                             <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($movement['date'] ?? $movement['created_at']); ?></td>
                             <td class="py-2 px-4 border-b">
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold <?php echo $movement['type'] === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                                    <?php echo ucfirst($movement['type']); ?>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold <?= $isEarning ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                    <?= ucfirst($movement['type']); ?>
                                 </span>
                             </td>
                             <td class="py-2 px-4 border-b">$<?php echo number_format($movement['amount'], 2); ?></td>
