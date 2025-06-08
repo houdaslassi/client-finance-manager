@@ -6,6 +6,28 @@ class Database {
     private $connection;
 
     private function __construct() {
+        // Check for SQLite for testing
+        $db_connection = getenv('DB_CONNECTION');
+        $db_database = getenv('DB_DATABASE');
+        if ($db_connection === 'sqlite' && $db_database) {
+            try {
+                $this->connection = new \PDO(
+                    "sqlite:$db_database",
+                    null,
+                    null,
+                    [
+                        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                        \PDO::ATTR_EMULATE_PREPARES => false,
+                    ]
+                );
+                return;
+            } catch (\PDOException $e) {
+                error_log("SQLite connection failed: " . $e->getMessage());
+                die("SQLite connection failed: " . $e->getMessage());
+            }
+        }
+
         // Try JawsDB URL first (Heroku)
         $jawsdb_url = getenv('JAWSDB_URL');
 

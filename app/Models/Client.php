@@ -48,8 +48,14 @@ class Client extends BaseModel {
         if (!empty($errors)) {
             return ['success' => false, 'errors' => $errors];
         }
-
-        return parent::create($data);
+        try {
+            return parent::create($data);
+        } catch (\PDOException $e) {
+            if (strpos($e->getMessage(), 'UNIQUE') !== false) {
+                return ['success' => false, 'errors' => ['email' => 'Email already exists']];
+            }
+            throw $e;
+        }
     }
 
     public function update($id, $data) {

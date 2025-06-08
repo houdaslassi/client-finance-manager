@@ -32,7 +32,7 @@ class BaseModel {
         $stmt = $this->db->prepare($sql);
         $stmt->execute(array_values($data));
 
-        return $this->db->lastInsertId();
+        return ['success' => true, 'id' => $this->db->lastInsertId()];
     }
 
     public function update($id, $data) {
