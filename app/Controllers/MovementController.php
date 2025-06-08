@@ -45,7 +45,7 @@ class MovementController extends BaseController
         $this->requireAuth();
         $clients = $this->clientModel->getAllWithBalance();
         $selectedClientId = isset($_GET['client_id']) ? (int)$_GET['client_id'] : null;
-        $this->render('movements/create', ['clients' => $clients, 'selectedClientId' => $selectedClientId]);
+        $this->view('movements/create', ['clients' => $clients, 'selectedClientId' => $selectedClientId]);
     }
 
     public function store()
@@ -57,6 +57,7 @@ class MovementController extends BaseController
             'amount' => $_POST['amount'] ?? '',
             'description' => $_POST['description'] ?? '',
             'date' => $_POST['date'] ?? date('Y-m-d'),
+            'created_by' => $_SESSION['admin_id'] ?? null,
         ];
         $this->movementModel->create($data);
         $this->redirect('/movements', 'Movement added successfully.');
@@ -94,4 +95,4 @@ class MovementController extends BaseController
         $this->movementModel->delete($id);
         $this->redirect('/movements', 'Movement deleted successfully.');
     }
-}
+} 
