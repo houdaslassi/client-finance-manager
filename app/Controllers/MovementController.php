@@ -44,7 +44,8 @@ class MovementController extends BaseController
     {
         $this->requireAuth();
         $clients = $this->clientModel->getAllWithBalance();
-        $this->view('movements/create', ['clients' => $clients]);
+        $selectedClientId = isset($_GET['client_id']) ? (int)$_GET['client_id'] : null;
+        $this->render('movements/create', ['clients' => $clients, 'selectedClientId' => $selectedClientId]);
     }
 
     public function store()
@@ -93,4 +94,4 @@ class MovementController extends BaseController
         $this->movementModel->delete($id);
         $this->redirect('/movements', 'Movement deleted successfully.');
     }
-} 
+}

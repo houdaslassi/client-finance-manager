@@ -18,8 +18,12 @@
                 <label class="block mb-2">Client</label>
                 <select name="client_id" class="w-full border px-3 py-2 rounded" required>
                     <option value="">Select Client</option>
-                    <?php foreach ($clients as $client): ?>
-                        <option value="<?= $client['id'] ?>"><?= htmlspecialchars($client['name']) ?></option>
+                    <?php
+                    $urlClientId = $_GET['client_id'] ?? null; 
+                    foreach ($clients as $client): ?>
+                     <option value="<?= $client['id'] ?>" <?= ($urlClientId == $client['id']) ? 'selected' : '' ?>>
+                         <?= htmlspecialchars($client['name']) ?>
+                    </option>
                     <?php endforeach; ?>
                 </select>
             </div>
