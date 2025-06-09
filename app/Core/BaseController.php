@@ -6,9 +6,7 @@ class BaseController {
     protected $session;
 
     public function __construct() {
-        // Initialize database connection
         $this->db = Database::getInstance()->getConnection();
-        // Initialize session
         $this->session = $_SESSION;
     }
 
