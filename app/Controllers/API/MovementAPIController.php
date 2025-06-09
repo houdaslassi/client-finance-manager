@@ -11,33 +11,25 @@ class MovementAPIController extends BaseAPIController {
      * GET /api/movements?client_id=X
      */
     public function getUserMovements() {
-        // Authenticate API request
         $userType = $this->authenticateAPI();
 
-        // Validate HTTP method
         $this->validateAPIMethod(['GET']);
 
-        // Validate required parameters
         $this->validateRequiredParams(['client_id']);
 
         $clientId = (int) $_GET['client_id'];
 
         try {
-            // Validate client exists and get client data
             $clientModel = new Client();
             $client = $this->validateRecordExists($clientModel, $clientId, 'Client');
 
-            // Get movements for this client
             $movementModel = new Movement();
             $movements = $movementModel->getByClientId($clientId);
 
-            // Apply optional filters
             $filteredMovements = $this->applyMovementFilters($movements);
 
-            // Calculate financial summary
             $summary = $this->calculateFinancialSummary($filteredMovements);
 
-            // Log API activity
             $this->logAPIActivity('get_user_movements', [
                 'client_id' => $clientId,
                 'user_type' => $userType,
@@ -45,14 +37,13 @@ class MovementAPIController extends BaseAPIController {
                 'filters_applied' => $this->getActiveFilters()
             ]);
 
-            // Return successful response
             $this->apiSuccess([
                 'user' => [
                     'id' => $client['id'],
                     'name' => $client['name'],
                     'email' => $client['email']
                 ],
-                'movements' => array_values($filteredMovements), // Re-index array after filtering
+                'movements' => array_values($filteredMovements),
                 'summary' => $summary,
                 'filters' => $this->getActiveFilters()
             ]);
@@ -68,27 +59,19 @@ class MovementAPIController extends BaseAPIController {
         }
     }
 
-    /**
-     * Create a new movement for a user
-     * POST /api/movements
-     */
+
     public function createMovement() {
-        // Authenticate API request
         $userType = $this->authenticateAPI();
 
-        // Validate HTTP method
         $this->validateAPIMethod(['POST']);
 
-        // Get and validate JSON input
         $input = $this->getJSONInput();
         $this->validateMovementCreationInput($input);
 
         try {
-            // Validate client exists
             $clientModel = new Client();
             $client = $this->validateRecordExists($clientModel, $input['client_id'], 'Client');
 
-            // Prepare movement data
             $movementData = [
                 'client_id' => (int) $input['client_id'],
                 'type' => $input['type'],
@@ -97,14 +80,11 @@ class MovementAPIController extends BaseAPIController {
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
-            // Create movement
             $movementModel = new Movement();
             $movementId = $movementModel->create($movementData);
 
-            // Get the created movement with client info
             $createdMovement = $movementModel->find($movementId);
 
-            // Log successful creation
             $this->logAPIActivity('create_movement_success', [
                 'movement_id' => $movementId,
                 'client_id' => $input['client_id'],
@@ -113,7 +93,6 @@ class MovementAPIController extends BaseAPIController {
                 'user_type' => $userType
             ]);
 
-            // Return success response with created movement
             $this->apiSuccess([
                 'movement_id' => $movementId,
                 'movement' => $createdMovement,
@@ -134,22 +113,17 @@ class MovementAPIController extends BaseAPIController {
         }
     }
 
-    /**
-     * Apply optional filters to movements array
-     * @param array $movements
-     * @return array Filtered movements
-     */
+
     private function applyMovementFilters(array $movements) {
         $startDate = $this->validateDateFormat($_GET['start_date'] ?? null, 'start_date');
         $endDate = $this->validateDateFormat($_GET['end_date'] ?? null, 'end_date');
         $type = $_GET['type'] ?? null;
 
-        // Validate type filter if provided
+
         if ($type && !in_array($type, ['income', 'expense', 'earning'])) {
             $this->apiError("Type filter must be 'income', 'earning', or 'expense'", 400);
         }
 
-        // If no filters, return original movements
         if (!$startDate && !$endDate && !$type) {
             return $movements;
         }
@@ -176,11 +150,7 @@ class MovementAPIController extends BaseAPIController {
         });
     }
 
-    /**
-     * Calculate financial summary for movements
-     * @param array $movements
-     * @return array Summary data
-     */
+
     private function calculateFinancialSummary(array $movements) {
         $totalIncome = 0;
         $totalExpenses = 0;
@@ -190,7 +160,6 @@ class MovementAPIController extends BaseAPIController {
         foreach ($movements as $movement) {
             $amount = (float) $movement['amount'];
 
-            // Handle both 'income'/'earning' and 'expense' types
             if ($movement['type'] === 'income' || $movement['type'] === 'earning') {
                 $totalIncome += $amount;
                 $incomeCount++;
@@ -215,10 +184,7 @@ class MovementAPIController extends BaseAPIController {
         ];
     }
 
-    /**
-     * Get currently active filters for response
-     * @return array Active filters
-     */
+
     private function getActiveFilters() {
         return [
             'start_date' => $_GET['start_date'] ?? null,
@@ -227,10 +193,7 @@ class MovementAPIController extends BaseAPIController {
         ];
     }
 
-    /**
-     * Validate input for movement creation
-     * @param array $input
-     */
+
     private function validateMovementCreationInput(array $input) {
         // Check required fields
         $requiredFields = ['client_id', 'type', 'amount', 'description'];
@@ -250,7 +213,6 @@ class MovementAPIController extends BaseAPIController {
             );
         }
 
-        // Validate type
         if (!in_array($input['type'], ['income', 'expense'])) {
             $this->apiError(
                 "Type must be 'income' or 'expense'",
@@ -259,17 +221,14 @@ class MovementAPIController extends BaseAPIController {
             );
         }
 
-        // Validate client_id is numeric
         if (!is_numeric($input['client_id']) || $input['client_id'] <= 0) {
             $this->apiError('client_id must be a positive integer', 400);
         }
 
-        // Validate amount (will be validated again in validatePositiveNumber)
         if (!is_numeric($input['amount'])) {
             $this->apiError('amount must be a number', 400);
         }
 
-        // Validate description length
         if (strlen(trim($input['description'])) < 3) {
             $this->apiError('description must be at least 3 characters long', 400);
         }
