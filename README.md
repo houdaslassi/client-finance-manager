@@ -1,6 +1,8 @@
 # Client Finance Manager
 
-A custom MVC CRUD system in vanilla PHP for managing clients and their financial movements (expenses/earnings), with administrator authentication and REST API.
+A custom PHP MVC application for managing clients and their financial movements (expenses/earnings), with secure admin authentication and a professional REST API.
+
+---
 
 ## Project Structure
 
@@ -17,49 +19,44 @@ client-finance-manager/
 │   │   ├── ClientController.php
 │   │   ├── HomeController.php
 │   │   └── MovementController.php
-│   │
 │   ├── Core/
-│   │   ├── BaseController.php
-│   │   ├── BaseModel.php
-│   │   └── Database.php
-│   │
 │   ├── Models/
-│   │   ├── Administrator.php
-│   │   ├── Client.php
-│   │   └── Movement.php
-│   │
 │   └── Views/
-│       ├── auth/
-│       ├── clients/
-│       ├── home/
-│       └── movements/
-│
 ├── config/
-│   └── app.php               # Unified configuration
-│
+│   └── app.php
 ├── database/
-│   └── schema.sql            # Database schema
-│
+│   └── schema.sql
 ├── public/
-│   ├── api.php              # API entry point
-│   ├── index.php            # Main application entry
-│   └── .htaccess            # URL rewriting
-│
-├── .env.example             # Environment template
+│   ├── api.php
+│   ├── index.php
+│   └── .htaccess
+├── tests/
+│   ├── Controllers/
+│   │   └── API/
+│   │       └── AuthAPIControllerTest.php
+│   └── Models/
+│       ├── ClientTest.php
+│       └── MovementTest.php
 ├── .gitignore
 ├── composer.json
 ├── composer.lock
+├── phpunit.xml
 └── README.md
 ```
 
+---
+
 ## Features
 
-- **Administrator Authentication** - Secure login/logout system
-- **Client Management** - Full CRUD operations for clients
-- **Financial Movements** - Track expenses and earnings per client
-- **Dashboard** - Overview with financial summaries
-- **Time Range Reports** - Filter movements by date
-- **Professional REST API** - Token-based authentication for external access
+- **Admin Authentication**: Secure login/logout for administrators
+- **Client Management**: Full CRUD for clients
+- **Financial Movements**: Track expenses and earnings per client
+- **Dashboard**: Financial summaries and quick stats
+- **Reports**: Filter movements by date range
+- **REST API**: Token-based authentication for external integrations
+- **Testing**: PHPUnit tests for API and models
+
+---
 
 ## Setup
 
@@ -71,123 +68,92 @@ client-finance-manager/
    cd client-finance-manager
    ```
 
-2. **Setup environment**
+2. **Install dependencies**
    ```bash
-   cp .env.example .env
-   # Edit .env with your database settings
+   composer install
    ```
 
-3. **Create database**
+3. **Configure environment**
+   - Copy `.env.example` to `.env` and set your DB credentials.
+
+4. **Create the database**
    ```bash
-   # Import the schema
    mysql -u root -p < database/schema.sql
    ```
 
-4. **Configure environment variables**
-   ```env
-   # .env
-   DB_HOST=localhost
-   DB_NAME=client_finance_manager
-   DB_USER=root
-   DB_PASS=your_password
-   ```
-
-5. **Start development server**
+5. **Run the development server**
    ```bash
    php -S localhost:8000 -t public
    ```
 
-6. **Access application**
-    - Web: http://localhost:8000
-    - API: http://localhost:8000/api
+6. **Access the app**
+   - Web: http://localhost:8000
+   - API: http://localhost:8000/api
 
-### Production (Heroku)
-
-1. **Add JawsDB addon**
-   ```bash
-   heroku addons:create jawsdb:kitefin
-   ```
-
-2. **Deploy**
-   ```bash
-   git push heroku main
-   ```
-
-3. **Setup database**
-    - Run `database/schema.sql` on production database
+---
 
 ## Database Schema
 
-```sql
-administrators (id, username, password, email, created_at, updated_at)
-clients (id, name, email, phone, address, created_at, updated_at)
-movements (id, client_id, type, amount, description, date, created_by, created_at)
-api_tokens (id, administrator_id, token_hash, expires_at, created_at, ...)
-```
+- `administrators` (id, username, password, email, created_at, updated_at)
+- `clients` (id, name, email, phone, address, created_at, updated_at)
+- `movements` (id, client_id, type, amount, description, date, created_by, created_at)
+- `api_tokens` (id, administrator_id, token_hash, expires_at, created_at, ...)
+
+---
 
 ## Web Interface
 
-**Default Login:** `admin` / `admin123`
+- **Login:** `/login` (default: `admin` / `admin123`)
+- **Clients:** List, create, edit, delete clients
+- **Movements:** Add/view earnings and expenses per client
+- **Dashboard:** Financial overview
+- **Reports:** Filter movements by date
 
-- Client management (create, read, update, delete)
-- Movement tracking for each client
-- Financial dashboard with summaries
-- Date range filtering and reports
+---
 
 ## API Usage
 
 ### Authentication
 
 ```bash
-# Login
 curl -X POST "http://localhost:8000/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
-
-# Response
-{
-  "success": true,
-  "data": {
-    "access_token": "your_token_here",
-    "token_type": "Bearer",
-    "expires_in": 86400
-  }
-}
 ```
 
-### Get User Movements
+### Get Movements
 
 ```bash
-# Get movements for specific client
 curl "http://localhost:8000/api/movements?client_id=1" \
-  -H "Authorization: Bearer your_token_here"
-
-# With filters
-curl "http://localhost:8000/api/movements?client_id=1&type=income&start_date=2025-01-01" \
-  -H "Authorization: Bearer your_token_here"
+  -H "Authorization: Bearer <token>"
 ```
 
-### API Endpoints
+### Endpoints
 
-- `POST /api/auth/login` - Get access token
-- `POST /api/auth/logout` - Revoke token
-- `GET /api/auth/me` - Get current user info
-- `GET /api/movements?client_id=X` - Get user movements
+- `POST /api/auth/login` - Login, get token
+- `POST /api/auth/logout` - Logout
+- `GET /api/auth/me` - Current admin info
+- `GET /api/movements?client_id=X` - Movements for client
 - `GET /api` - API documentation
 
-## Technology Stack
+---
 
-- **PHP 8.0+** - Custom MVC framework
-- **MySQL** - Database with foreign key relationships
-- **Vanilla JavaScript** - Frontend interactions
-- **No external frameworks** - Pure PHP implementation
+## Testing
 
-## Security Features
+- Run all tests:
+  ```bash
+  ./vendor/bin/phpunit
+  ```
 
-- Session-based authentication (web)
-- Token-based authentication (API)
-- Password hashing (bcrypt)
-- SQL injection protection
-- CSRF protection
-- XSS prevention
+---
+
+## Security
+
+- Passwords hashed (bcrypt)
+- SQL injection protection (prepared statements)
+- CSRF protection (web)
+- Token-based API authentication
+
+---
+
 
