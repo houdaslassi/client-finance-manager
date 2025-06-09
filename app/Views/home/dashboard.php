@@ -67,7 +67,7 @@ if (!isset($_SESSION['admin_id'])) {
         </div>
 
         <!-- Quick Stats Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-6">
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-800">Total Clients</h3>
                 <p class="text-3xl font-bold text-blue-600"><?php echo htmlspecialchars($totalClients); ?></p>
@@ -76,6 +76,8 @@ if (!isset($_SESSION['admin_id'])) {
                 <h3 class="text-lg font-semibold text-gray-800">Total Movements</h3>
                 <p class="text-3xl font-bold text-purple-600"><?php echo htmlspecialchars($totalMovements); ?></p>
             </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 mt-4">
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-800">Total Income</h3>
                 <p class="text-3xl font-bold text-green-600">$<?php echo number_format($totalIncome, 2); ?></p>
@@ -83,6 +85,10 @@ if (!isset($_SESSION['admin_id'])) {
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-800">Total Expenses</h3>
                 <p class="text-3xl font-bold text-red-600">$<?php echo number_format($totalExpenses, 2); ?></p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800">Balance</h3>
+                <p class="text-3xl font-bold <?php echo ($balance >= 0) ? 'text-green-600' : 'text-red-600'; ?>">$<?php echo number_format($balance, 2); ?></p>
             </div>
         </div>
     </div>
