@@ -50,12 +50,12 @@ define('SESSION_LIFETIME', (int) (getenv('SESSION_LIFETIME') ?: 3600));
 ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
 session_set_cookie_params(SESSION_LIFETIME);
 
-// Database configuration for your existing Database class
+// Database configuration
 if ($isProduction) {
-    // Production uses JAWSDB_URL (your Database class handles this)
+    // Use JAWSDB_URL in production
     $databaseConfig = ['use_jawsdb' => true];
 } else {
-    // Local development
+    // Local development settings
     $databaseConfig = [
         'host' => getenv('DB_HOST') ?: 'localhost',
         'dbname' => getenv('DB_NAME') ?: 'client_finance_manager',
