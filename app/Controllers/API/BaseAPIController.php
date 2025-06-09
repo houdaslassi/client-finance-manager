@@ -5,10 +5,6 @@ use Core\Database;
 
 class BaseAPIController {
     protected $db;
-    protected $validTokens = [
-        'cfm_admin_2025' => 'admin',
-        'cfm_demo_2025' => 'demo'
-    ];
 
     public function __construct() {
         // Reuse the same database singleton as web controllers
