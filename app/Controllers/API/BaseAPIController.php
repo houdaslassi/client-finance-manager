@@ -7,14 +7,11 @@ class BaseAPIController {
     protected $db;
 
     public function __construct() {
-        // Reuse the same database singleton as web controllers
         $this->db = Database::getInstance()->getConnection();
         $this->setAPIHeaders();
     }
 
-    /**
-     * Set JSON and CORS headers for API responses
-     */
+
     private function setAPIHeaders() {
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
@@ -28,10 +25,7 @@ class BaseAPIController {
         }
     }
 
-    /**
-     * API Token Authentication (updated to use database)
-     * @return array Admin data
-     */
+
     protected function authenticateAPI($withTokenMeta = false) {
         $token = $this->getAPIToken();
 
