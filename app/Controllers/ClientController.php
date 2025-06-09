@@ -14,10 +14,16 @@ class ClientController extends BaseController {
 
     public function index() {
         $this->requireAuth();
-        $clients = $this->clientModel->getAllWithBalance();
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = 10;
+        $totalClients = $this->clientModel->getTotalCount();
+        $totalPages = (int) ceil($totalClients / $perPage);
+        $clients = $this->clientModel->getPaginated($page, $perPage);
         $this->render('clients/index', [
             'clients' => $clients,
-            'title' => 'Clients'
+            'title' => 'Clients',
+            'page' => $page,
+            'totalPages' => $totalPages
         ]);
     }
 

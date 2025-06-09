@@ -19,13 +19,15 @@ class MovementController extends BaseController
     public function index()
     {
         $this->requireAuth();
-        $startDate = $_GET['start_date'] ?? null;
-        $endDate = $_GET['end_date'] ?? null;
-        $movements = $this->movementModel->allWithClients($startDate, $endDate);
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = 10;
+        $totalMovements = $this->movementModel->getTotalCount();
+        $totalPages = (int) ceil($totalMovements / $perPage);
+        $movements = $this->movementModel->getPaginated($page, $perPage);
         $this->render('movements/index', [
             'movements' => $movements,
-            'start_date' => $startDate,
-            'end_date' => $endDate
+            'page' => $page,
+            'totalPages' => $totalPages
         ]);
     }
 

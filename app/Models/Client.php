@@ -155,4 +155,20 @@ class Client extends BaseModel {
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         return $result['total'] ?? 0;
     }
+
+    public function getPaginated($page = 1, $perPage = 10) {
+        $offset = ($page - 1) * $perPage;
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getTotalCount() {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM {$this->table}");
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result['total'] ?? 0;
+    }
 } 

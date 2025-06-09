@@ -125,4 +125,20 @@ class Movement extends BaseModel {
         $stmt->execute([$clientId]);
         return $stmt->fetchAll();
     }
+
+    public function getPaginated($page = 1, $perPage = 10) {
+        $offset = ($page - 1) * $perPage;
+        $stmt = $this->db->prepare("SELECT m.*, c.name as client_name FROM movements m JOIN clients c ON m.client_id = c.id ORDER BY m.date DESC, m.id DESC LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getTotalCount() {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM movements");
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result['total'] ?? 0;
+    }
 } 
