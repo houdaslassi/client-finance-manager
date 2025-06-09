@@ -141,4 +141,52 @@ class Movement extends BaseModel {
         $result = $stmt->fetch();
         return $result['total'] ?? 0;
     }
+
+    public function getPaginatedFiltered($page = 1, $perPage = 10, $startDate = null, $endDate = null) {
+        $offset = ($page - 1) * $perPage;
+        $sql = "SELECT m.*, c.name as client_name FROM movements m JOIN clients c ON m.client_id = c.id";
+        $params = [];
+        $conditions = [];
+        if ($startDate) {
+            $conditions[] = "m.date >= ?";
+            $params[] = $startDate;
+        }
+        if ($endDate) {
+            $conditions[] = "m.date <= ?";
+            $params[] = $endDate;
+        }
+        if ($conditions) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+        $sql .= " ORDER BY m.date DESC, m.id DESC LIMIT :limit OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $i => $param) {
+            $stmt->bindValue($i + 1, $param);
+        }
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getFilteredCount($startDate = null, $endDate = null) {
+        $sql = "SELECT COUNT(*) as total FROM movements m";
+        $params = [];
+        $conditions = [];
+        if ($startDate) {
+            $conditions[] = "m.date >= ?";
+            $params[] = $startDate;
+        }
+        if ($endDate) {
+            $conditions[] = "m.date <= ?";
+            $params[] = $endDate;
+        }
+        if ($conditions) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetch();
+        return $result['total'] ?? 0;
+    }
 } 
