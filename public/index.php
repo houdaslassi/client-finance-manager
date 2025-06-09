@@ -25,14 +25,6 @@ $routes = [
     '/' => ['controller' => 'HomeController', 'action' => 'index'],
     '/dashboard' => ['controller' => 'HomeController', 'action' => 'dashboard'],
 
-    // Test routes
-    '/test' => ['controller' => 'TestController', 'action' => 'index'],
-    '/test/json' => ['controller' => 'TestController', 'action' => 'json'],
-    '/test/redirect' => ['controller' => 'TestController', 'action' => 'redirect'],
-    '/test/not-found' => ['controller' => 'TestController', 'action' => 'notFound'],
-    '/test/unauthorized' => ['controller' => 'TestController', 'action' => 'unauthorized'],
-    '/test/admin' => ['controller' => 'TestController', 'action' => 'admin'],
-
     // Client routes
     '/clients' => ['controller' => 'ClientController', 'action' => 'index'],
     '/clients/create' => ['controller' => 'ClientController', 'action' => 'create'],
