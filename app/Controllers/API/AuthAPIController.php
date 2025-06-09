@@ -72,7 +72,6 @@ class AuthAPIController extends BaseAPIController {
                 'username' => $input['username'] ?? 'unknown',
                 'error' => $e->getMessage()
             ]);
-
             $this->apiError('Authentication failed', 500);
         }
     }
@@ -172,7 +171,7 @@ class AuthAPIController extends BaseAPIController {
                 last_used_at,
                 user_agent,
                 ip_address
-            ) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)
+            ) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)
         ");
 
         $stmt->execute([
@@ -190,7 +189,7 @@ class AuthAPIController extends BaseAPIController {
     private function revokeAPIToken($token) {
         $stmt = $this->db->prepare("
             UPDATE api_tokens 
-            SET revoked_at = NOW() 
+            SET revoked_at = CURRENT_TIMESTAMP 
             WHERE token_hash = ? AND revoked_at IS NULL
         ");
         $stmt->execute([hash('sha256', $token)]);
@@ -214,7 +213,7 @@ class AuthAPIController extends BaseAPIController {
     private function cleanupExpiredTokens($adminId) {
         $stmt = $this->db->prepare("
             DELETE FROM api_tokens 
-            WHERE administrator_id = ? AND expires_at < NOW()
+            WHERE administrator_id = ? AND expires_at < CURRENT_TIMESTAMP
         ");
         $stmt->execute([$adminId]);
     }
@@ -223,23 +222,18 @@ class AuthAPIController extends BaseAPIController {
      * Limit active tokens per admin
      */
     private function limitActiveTokens($adminId, $maxTokens = 5) {
+        // Only keep the most recent $maxTokens tokens
         $stmt = $this->db->prepare("
-            SELECT COUNT(*) FROM api_tokens 
-            WHERE administrator_id = ? AND expires_at > NOW() AND revoked_at IS NULL
+            SELECT id FROM api_tokens 
+            WHERE administrator_id = ? AND revoked_at IS NULL AND expires_at > CURRENT_TIMESTAMP
+            ORDER BY created_at DESC
+            LIMIT -1 OFFSET ?
         ");
-        $stmt->execute([$adminId]);
-        $count = $stmt->fetchColumn();
-
-        if ($count >= $maxTokens) {
-            // Revoke oldest token
-            $stmt = $this->db->prepare("
-                UPDATE api_tokens 
-                SET revoked_at = NOW() 
-                WHERE administrator_id = ? AND revoked_at IS NULL 
-                ORDER BY created_at ASC 
-                LIMIT 1
-            ");
-            $stmt->execute([$adminId]);
+        $stmt->execute([$adminId, $maxTokens]);
+        $tokensToRevoke = $stmt->fetchAll();
+        foreach ($tokensToRevoke as $token) {
+            $stmt2 = $this->db->prepare("UPDATE api_tokens SET revoked_at = CURRENT_TIMESTAMP WHERE id = ?");
+            $stmt2->execute([$token['id']]);
         }
     }
 }
