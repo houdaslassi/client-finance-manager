@@ -158,7 +158,15 @@ class Client extends BaseModel {
 
     public function getPaginated($page = 1, $perPage = 10) {
         $offset = ($page - 1) * $perPage;
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+        $stmt = $this->db->prepare("
+            SELECT c.*, 
+                COALESCE(SUM(CASE WHEN m.type IN ('income', 'earning') THEN m.amount WHEN m.type = 'expense' THEN -m.amount ELSE 0 END), 0) as balance
+            FROM {$this->table} c 
+            LEFT JOIN movements m ON c.id = m.client_id 
+            GROUP BY c.id 
+            ORDER BY c.name ASC 
+            LIMIT :limit OFFSET :offset
+        ");
         $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();

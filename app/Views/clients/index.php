@@ -66,7 +66,7 @@
                 </tbody>
             </table>
             <!-- Pagination Controls -->
-            <?php if (isset($page, $totalPages) && $totalPages > 1): ?>
+            <?php if (isset($page, $totalPages)): ?>
             <div class="flex justify-center mt-6">
                 <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <?php if ($page > 1): ?>
