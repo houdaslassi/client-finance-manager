@@ -40,12 +40,14 @@ class HomeController extends BaseController {
         // Get total income and expenses
         $totalIncome = $movement->getTotalIncome();
         $totalExpenses = $movement->getTotalExpenses();
+        $balance = $totalIncome - $totalExpenses;
         
         $this->render('home/dashboard', [
             'totalClients' => $totalClients,
             'totalMovements' => $totalMovements,
             'totalIncome' => $totalIncome,
-            'totalExpenses' => $totalExpenses
+            'totalExpenses' => $totalExpenses,
+            'balance' => $balance
         ]);
     }
 } 
