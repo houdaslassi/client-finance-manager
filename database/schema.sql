@@ -65,5 +65,5 @@ CREATE INDEX idx_movement_type ON movements(type);
 INSERT IGNORE INTO administrators (username, email, password) VALUES (
     'admin',
     'admin@example.com',
-    '$2y$10$7rLSvRVyTQORapkDOqmkhetjF6H9lJHBxgNvXqnEJALrS1bGiJDMW'
+    '$2y$10$VCaNDMt5ATUE4zUikknMjO9Rs8hAHTaDQF9Pmt4RSfgnKd2bPvE0a'
 );
