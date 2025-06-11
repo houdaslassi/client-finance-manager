@@ -20,24 +20,19 @@ CREATE TABLE IF NOT EXISTS clients (
     phone VARCHAR(20),
     address TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_clients_email (email)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
 -- Financial movements table
 CREATE TABLE IF NOT EXISTS movements (
                                          id INT AUTO_INCREMENT PRIMARY KEY,
                                          client_id INT NOT NULL,
-                                         type ENUM('expense', 'earning', 'income') NOT NULL,
+                                         type ENUM('expense', 'earning') NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     description TEXT,
     date DATE NOT NULL,
     created_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_client_movements (client_id, date),
-    INDEX idx_movement_type (type),
-    INDEX idx_movements_date (date),
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
     FOREIGN KEY (created_by) REFERENCES administrators(id)
     );
@@ -60,12 +55,13 @@ CREATE TABLE IF NOT EXISTS api_tokens (
     FOREIGN KEY (administrator_id) REFERENCES administrators(id) ON DELETE CASCADE
     );
 
+-- Create indexes (compatible with older MySQL versions)
+CREATE INDEX idx_client_movements ON movements(client_id, date);
+CREATE INDEX idx_movement_type ON movements(type);
+
 -- Insert default administrator (password: Admin123!)
 INSERT IGNORE INTO administrators (username, email, password) VALUES (
     'admin',
     'admin@example.com',
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'
 );
-
--- Show created tables
-SHOW TABLES;
