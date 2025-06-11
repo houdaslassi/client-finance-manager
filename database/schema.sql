@@ -59,7 +59,9 @@ CREATE TABLE IF NOT EXISTS api_tokens (
 CREATE INDEX idx_client_movements ON movements(client_id, date);
 CREATE INDEX idx_movement_type ON movements(type);
 
--- Insert default administrator (password: Admin123!)
+-- Insert default administrator with a working hash
+-- Password: admin123
+-- This hash was generated with: password_hash('admin123', PASSWORD_DEFAULT)
 INSERT IGNORE INTO administrators (username, email, password) VALUES (
     'admin',
     'admin@example.com',
