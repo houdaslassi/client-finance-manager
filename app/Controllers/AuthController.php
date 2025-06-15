@@ -23,7 +23,6 @@ class AuthController extends BaseController {
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // CSRF Protection - FIXED VERSION
             if (!$this->validateCsrfToken()) {
                 $this->render('auth/login', [
                     'error' => 'Invalid request. Please try again.',
@@ -86,12 +85,10 @@ class AuthController extends BaseController {
                     $this->setRememberToken($result['id'], $admin);
                 }
 
-                // Log successful login
                 error_log("Successful login for user: {$username} from IP: " . $this->getRealIpAddress());
 
                 $this->redirect('/dashboard');
             } else {
-                // Log failed attempt
                 $this->logFailedAttempt();
                 error_log("Failed login attempt for user: {$username} from IP: " . $this->getRealIpAddress());
 
@@ -122,7 +119,6 @@ class AuthController extends BaseController {
         // Clear all session variables
         $_SESSION = array();
 
-        // Destroy the session
         session_destroy();
 
         // Clear cookies securely
@@ -137,9 +133,7 @@ class AuthController extends BaseController {
         exit();
     }
 
-    /**
-     * Generate CSRF token
-     */
+
     private function generateCsrfToken() {
         if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -147,9 +141,7 @@ class AuthController extends BaseController {
         return $_SESSION['csrf_token'];
     }
 
-    /**
-     * Validate CSRF token - FIXED VERSION
-     */
+
     private function validateCsrfToken() {
         $sessionToken = $_SESSION['csrf_token'] ?? null;
         $postToken = $_POST['csrf_token'] ?? null;
@@ -172,9 +164,7 @@ class AuthController extends BaseController {
         return true;
     }
 
-    /**
-     * Basic rate limiting
-     */
+
     private function isRateLimited() {
         $ip = $this->getRealIpAddress();
         $key = 'login_attempts_' . $ip;
@@ -196,9 +186,7 @@ class AuthController extends BaseController {
         return $attempts['count'] >= 5;
     }
 
-    /**
-     * Log failed login attempt
-     */
+
     private function logFailedAttempt() {
         $ip = $this->getRealIpAddress();
         $key = 'login_attempts_' . $ip;
@@ -211,18 +199,14 @@ class AuthController extends BaseController {
         $_SESSION[$key]['last_attempt'] = time();
     }
 
-    /**
-     * Clear failed login attempts
-     */
+
     private function clearFailedAttempts() {
         $ip = $this->getRealIpAddress();
         $key = 'login_attempts_' . $ip;
         unset($_SESSION[$key]);
     }
 
-    /**
-     * Set secure remember token
-     */
+
     private function setRememberToken($adminId, $admin) {
         $token = bin2hex(random_bytes(64)); // Longer token for better security
 
@@ -240,9 +224,7 @@ class AuthController extends BaseController {
         $admin->saveRememberToken($adminId, hash('sha256', $token)); // Store hashed token
     }
 
-    /**
-     * Get real IP address (handles proxies)
-     */
+
     private function getRealIpAddress() {
         $headers = [
             'HTTP_X_FORWARDED_FOR',
